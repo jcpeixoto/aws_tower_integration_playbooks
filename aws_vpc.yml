@@ -11,6 +11,10 @@
         region: "{{ aws_region }}"
         tenancy: default
       register: ansible_tower_vpc
+      
+    - name: debug
+      debug:
+        msg: "{{ ansible_tower_vpc }}"
     
     - name: Create an Internet Gateway and associate to the VPC
       ec2_vpc_igw:
