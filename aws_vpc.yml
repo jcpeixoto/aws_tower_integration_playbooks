@@ -24,7 +24,7 @@
         state: present
         vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         cidr: 10.10.0.0/20
-	region: "{{ aws_region }}"
+        region: "{{ aws_region }}"
       register: ansible_tower_subnet
 
     - name: Set up public subnet route table
