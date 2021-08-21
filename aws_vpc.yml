@@ -80,7 +80,7 @@
         region: "{{ aws_region }}"
         key_name: ansible-tower-aws-key
         instance_type: t2.medium
-        image: ami-000979d0952e1ea3a
+        image: ami-002cdac160d085b42
         wait: yes
         group: ansible_tower_sg
         count: 1
