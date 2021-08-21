@@ -1,11 +1,16 @@
 --- 
 - name: Play to create EC2 resources and finally a RHEL 8 instance
   hosts: localhost
+  connection: local
   vars:
-    aws_region: ap-southeast-1
+    aws_region: us-east-1
+    aws_access_key: AKIAY7GHPYHZUFMBE2MU
+    aws_secret_key: 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
   tasks:
     - name: Task to create the VPC
       ec2_vpc_net:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         name: ansible_tower_vpc
         cidr_block: 10.10.0.0/16
         region: "{{ aws_region }}"
@@ -18,6 +23,8 @@
     
     - name: Create an Internet Gateway and associate to the VPC
       ec2_vpc_igw:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         state: present
@@ -25,6 +32,8 @@
 
     - name: Create a subnet in the VPC
       ec2_vpc_subnet:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         state: present
         vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         cidr: 10.10.0.0/20
@@ -33,6 +42,8 @@
 
     - name: Set up public subnet route table
       ec2_vpc_route_table:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
         region: "{{ aws_region }}"
         subnets: 
@@ -42,6 +53,8 @@
             gateway_id: "{{ ansible_tower_igw.gateway_id }}"
     - name: Task to create AWS Security Groups
       ec2_group:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         name: ansible_tower_sg
         description: AWS Security Group for Ansible Tower Demonstration
         vpc_id: "{{ ansible_tower_vpc.vpc.id }}"
@@ -52,8 +65,18 @@
               - 22
             cidr_ip: 0.0.0.0/0
             rule_desc: allow all connections on port 22
+    - name: create key pair using provided key_material 
+      ec2_key: 
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ aws_region }}"
+        name: ansible-tower-aws-key
+        key_material: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDIro3SN80ckrxyHid65mvuDi2zY8zakQ1G32F8vT2OZtpX8nQ7WgJdqvOYI/Eba83oEZGfI97DZFab2tNVi5GPJoc2wNfd6UVpQTi9DdKuldT9JjYTZuHdEfK+AFixyOtkvabmd7EggZlxtfrZ14mxzTttouWAb6JRQAtQxBGw1Kb7NOijSlxQrX8cqKTNU4ODO3/+du3pFawA2E5LTXuebBhWk5k5BCudQFWNCVlABWuAiblFDv9IvhCnf6c71YflEPyoDdGq5hV/OiKm3fa3i1LBycW61+PpnEf1nCoIhVQYo3jIcaRjJNGPC8DaU6/gbq731WfvPdnqwYOzcAN6ItuLA203ev8Pz2AZ2PvzK9H+QXCxJykYNwxN7daZNRp40RKnf8WD2yZbN7rnlk+HYoqzxqq3KU8HzD7lR1WNIuqVjVoYH4NqoeslX8FGKsG2BiQQt5fw/WcFKcbiopUa4ab0rACxidNB38ppMj9sgFGjOFPzHLQcyBo8WajL/7dSDZ0QTO2dRSpJSJ4n3aMmCBhoF/WXPrunNTMhUFoSLleQmy9Vvc2/cOy6+SWvN+bELHKm9AkEfaHSaEtH9CshimjPHf6sStdZoQi4IIO83FLeedzH5XU589Z5aXzoWv8x6BoIpJMCdzqOqojNKzHqOEsQEfOe2NAAHfseS65cvw== My AWS SSH Keys'
+      
     - name: Task to provision the RHEL EC2 instance
       ec2:
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
         region: "{{ aws_region }}"
         key_name: ansible-tower-aws-key
         instance_type: t2.medium
