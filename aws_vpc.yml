@@ -4,8 +4,7 @@
   connection: local
   vars:
     aws_region: us-east-1
-    aws_access_key: AKIAY7GHPYHZUFMBE2MU
-    aws_secret_key: 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
+
   tasks:
     - name: Task to create the VPC
       ec2_vpc_net:
